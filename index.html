@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Gallery</title>
+  <link rel="stylesheet" href="CSS/style.css" />
+</head>
+<body>
+<header class="header">
+  <div class="left-section">
+    <div class="logo">
+  <img src="Imagens/as.png" alt="Logo da empresa">
+  </div>
+    <button class="menu-btn" aria-label="Menu">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </button>
+  </div>
+  <div class="right-section">
+    <button class="search-icon" aria-label="Buscar">🔍</button>
+    <form class="search-form">
+      <input type="search" placeholder="Pesquisar..." aria-label="Search" />
+    </form>
+
+    <div class="icon">⚙</div>
+    <div class="avatar">
+      <img src="Imagens/a.PNG" alt="Avatar do usuário">
+    </div>
+  </div>
+</header>
+
+
+<main class="gallery">
+  <div class="game-box" data-id="1" data-name="Jogo A"></div>
+  <div class="game-box" data-id="2" data-name="Jogo B"></div>
+  <div class="game-box" data-id="3" data-name="Jogo C"></div>
+  <div class="game-box" data-id="4" data-name="Jogo D"></div>
+  <div class="game-box" data-id="5" data-name="Jogo E"></div>
+  <div class="game-box" data-id="6" data-name="Jogo F"></div>
+</main>
+
+<script>
+  const games = [
+    { id: 1, name: "Jogo A" },
+    { id: 2, name: "Jogo B" },
+    { id: 3, name: "Jogo C" },
+    { id: 4, name: "Jogo D" },
+    { id: 5, name: "Jogo E" },
+    { id: 6, name: "Jogo F" }
+  ];
+
+  const gallery = document.getElementById("gallery");
+
+  games.forEach(game => {
+    const box = document.createElement("div");
+    box.classList.add("game-box");
+    box.dataset.id = game.id;
+    box.textContent = game.name;
+    gallery.appendChild(box);
+  });
+</script>
+
+</body>
+</html>

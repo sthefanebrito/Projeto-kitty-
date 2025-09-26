@@ -1,66 +1,818 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Game Gallery</title>
-  <link rel="stylesheet" href="CSS/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevGames Hub</title>
+    <!-- Adicionando o Google Icons para os ícones -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* CSS - Estilização baseada no seu Design */
+        :root {
+            --bg-color: #1c1c1c;
+            --header-bg-color: #2a2a2a;
+            --search-bg-color: #333333;
+            --primary-color: #ff4081;
+            --text-color: #f0f0f0;
+            --card-bg-color: #ffffff;
+            --card-text-color: #1c1c1c;
+        }
+
+        /* Reset Básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s;
+        }
+
+        /* Cabeçalho Principal */
+        .main-header {
+            background-color: var(--header-bg-color);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #444;
+            position: relative;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 28px;
+            cursor: pointer;
+            margin-right: 1rem;
+            transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+
+        .menu-btn:hover {
+            transform: rotate(90deg);
+            color: var(--primary-color);
+        }
+
+        .search-container {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-container .icon-btn {
+            position: absolute;
+            left: 10px;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-container .icon-btn .material-icons {
+            font-size: 24px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .search-container .icon-btn:hover .material-icons {
+             animation: pulse 1s infinite;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 3.5rem;
+            border-radius: 50px;
+            border: 1px solid transparent;
+            background-color: var(--search-bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+        
+        .search-input:focus {
+            outline: 2px solid var(--primary-color);
+        }
+        
+        .profile-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: 1rem;
+            position: relative; /* Para o menu dropdown */
+        }
+
+        .profile-icon {
+            font-size: 28px;
+            color: var(--primary-color);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .profile-avatar {
+            /* MODIFICADO: Estilos ajustados para um ícone em vez de uma imagem */
+            font-size: 44px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .profile-icon:hover, .profile-avatar:hover {
+            animation: pulse 1s infinite;
+        }
+        
+        .user-dropdown {
+            display: none; /* Escondido por padrão */
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background-color: var(--header-bg-color);
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 0.5rem;
+            z-index: 1200;
+            width: 150px;
+        }
+        
+        .user-dropdown.visible {
+            display: block;
+        }
+        
+        .user-dropdown p {
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+            border-bottom: 1px solid #555;
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-dropdown button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .genre-filter-container {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--header-bg-color);
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            z-index: 1100;
+            width: 90%;
+            max-width: 600px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .genre-filter-container.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .genre-btn {
+            background-color: var(--search-bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        
+        .genre-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Menu Lateral */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100%;
+            background-color: var(--header-bg-color);
+            padding: 1.5rem;
+            transition: left 0.3s ease-in-out;
+            z-index: 1000;
+            border-right: 1px solid #444;
+        }
+        
+        .side-menu.active { left: 0; }
+        .side-menu h2 { margin-bottom: 2rem; border-bottom: 1px solid var(--primary-color); padding-bottom: 0.5rem; }
+        .side-menu nav ul { list-style: none; }
+        .side-menu nav ul li a, .side-menu .settings-btn { display: block; color: var(--text-color); text-decoration: none; padding: 1rem 0; font-size: 1.1rem; cursor: pointer; border-bottom: 1px solid #444; }
+        .side-menu nav ul li a:hover, .side-menu .settings-btn:hover { color: var(--primary-color); }
+
+        /* Grade de Jogos */
+        main { padding: 2rem; }
+        #game-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
+
+        /* Card do Jogo */
+        .game-card { background-color: var(--card-bg-color); color: var(--card-text-color); border-radius: 8px; overflow: hidden; border: 4px solid var(--primary-color); display: flex; flex-direction: column; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; cursor: pointer; }
+        
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .game-card img { width: 100%; height: 180px; object-fit: cover; display: block; }
+        .card-info { padding: 1rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .card-header h3 { font-size: 1.2rem; }
+        .fav-btn { background: none; border: none; cursor: pointer; color: #ccc; font-size: 28px; transition: transform 0.2s ease-in-out; }
+        .fav-btn.favorited { color: var(--primary-color); }
+        .fav-btn:hover { transform: scale(1.2); }
+        .card-genre { font-size: 0.8rem; font-weight: 600; color: #555; background-color: #f0f0f0; padding: 0.25rem 0.6rem; border-radius: 15px; display: inline-block; margin-bottom: 0.75rem; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .rating { color: #f39c12; }
+
+        /* NOVO: Estilo para o botão de jogar */
+        .play-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        
+        .play-btn:hover {
+            background-color: #d81b60; /* Um tom de rosa mais escuro */
+        }
+        
+        /* Estilos do Modal Genérico de Autenticação */
+        .modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); animation: fadeIn 0.3s;
+        }
+        .modal-content {
+            background-color: var(--header-bg-color); color: var(--text-color); margin: 10% auto; padding: 2rem; border: 1px solid var(--primary-color); border-radius: 8px; width: 90%; max-width: 500px; position: relative; animation: slideIn 0.4s;
+        }
+        .close-btn { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-btn:hover, .close-btn:focus { color: white; }
+        
+        .auth-form { margin-top: 1rem; }
+        .auth-form input { width: 100%; padding: 10px; margin-bottom: 1rem; border-radius: 5px; border: 1px solid #555; background-color: var(--search-bg-color); color: var(--text-color); font-size: 1rem; }
+        .auth-form button { background-color: var(--primary-color); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1rem; }
+        .auth-toggle-link { color: var(--primary-color); cursor: pointer; margin-top: 1rem; display: inline-block; }
+        .auth-error { color: #e74c3c; margin-top: 1rem; text-align: center; }
+        #signup-form { display: none; } /* Escondido por padrão */
+
+        /* Estilos da Visão de Detalhes */
+        .hidden { display: none !important; }
+
+        #game-detail-view {
+            animation: fadeIn 0.5s;
+        }
+
+        .back-btn {
+            background: var(--search-bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 20px;
+            padding: 0.7rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 2rem;
+            transition: background-color 0.2s;
+        }
+
+        .back-btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        #detail-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            color: var(--text-color);
+        }
+
+        @media (min-width: 768px) {
+            #detail-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        #detail-content img {
+            width: 100%;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .detail-info h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .detail-info .rating {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .detail-description {
+            margin-top: 1.5rem;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        #detail-comments-list { margin-top: 1rem; margin-bottom: 1.5rem; max-height: 300px; overflow-y: auto; padding-right: 10px; }
+        .comment-item { background-color: var(--search-bg-color); padding: 10px; border-radius: 5px; margin-bottom: 8px; border-left: 3px solid var(--primary-color); }
+        #detail-comment-form textarea { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #555; background-color: var(--search-bg-color); color: var(--text-color); resize: vertical; min-height: 70px; font-size: 1rem; }
+        #detail-comment-form button { background-color: var(--primary-color); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; float: right; font-weight: bold; }
+
+        /* NOVO: Estilo para a notificação */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+            transform: translate(-50%, 20px);
+        }
+        .notification.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, 0);
+        }
+
+        /* KEYFRAMES DAS ANIMAÇÕES */
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        @keyframes heartbeat { 0% { transform: scale(1); } 25% { transform: scale(1.3); } 50% { transform: scale(1); } 75% { transform: scale(1.3); } 100% { transform: scale(1); } }
+        .animate-heart { animation: heartbeat 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
 </head>
 <body>
-<header class="header">
-  <div class="left-section">
-    <div class="logo">
-  <img src="Imagens/as.png" alt="Logo da empresa">
-  </div>
-    <button class="menu-btn" aria-label="Menu">
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-    </button>
-  </div>
-  <div class="right-section">
-    <button class="search-icon" aria-label="Buscar">🔍</button>
-    <form class="search-form">
-      <input type="search" placeholder="Pesquisar..." aria-label="Search" />
-    </form>
 
-    <div class="icon">⚙</div>
-    <div class="avatar">
-      <img src="Imagens/a.PNG" alt="Avatar do usuário">
+    <header class="main-header">
+        <button id="menu-toggle-btn" class="menu-btn material-icons">menu</button>
+        <div class="search-container">
+            <button id="genre-toggle-btn" class="icon-btn"><i class="material-icons">favorite</i></button>
+            <input type="text" class="search-input" placeholder="Pesquisar jogos...">
+        </div>
+        <div class="profile-area">
+            <i class="material-icons profile-icon">diamond</i>
+            <i id="profile-avatar-btn" class="material-icons profile-avatar">account_circle</i>
+            
+            <div id="user-dropdown" class="user-dropdown">
+                <p id="dropdown-username">Usuário</p>
+                <button id="logout-btn">Sair</button>
+            </div>
+        </div>
+        <div id="genre-filter-container" class="genre-filter-container"></div>
+    </header>
+
+    <aside id="side-menu" class="side-menu">
+        <h2>Menu</h2>
+        <nav>
+            <ul>
+                <li><a href="#" id="home-link">Página Inicial</a></li>
+                <li><a href="#" id="favorites-link">Favoritos</a></li>
+                <li><a href="#" id="history-link">Histórico</a></li>
+                <li><a href="#" class="settings-btn" id="clear-favorites-btn">Limpar Favoritos</a></li>
+                <li><a href="#" class="settings-btn" id="clear-history-btn">Limpar Histórico</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main>
+        <div id="game-container"></div>
+        
+        <div id="game-detail-view" class="hidden">
+             <button id="back-to-grid-btn" class="back-btn">&larr; Voltar</button>
+             <div id="detail-content"></div>
+        </div>
+    </main>
+
+    <!-- Modal de Login/Criação de Conta -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span id="auth-modal-close-btn" class="close-btn">&times;</span>
+            <form id="login-form">
+                <h2>Login</h2>
+                <div class="auth-form">
+                    <input type="text" id="login-username" placeholder="Nome de usuário" required>
+                    <input type="password" id="login-password" placeholder="Senha" required>
+                    <button type="submit">Entrar</button>
+                </div>
+                <a class="auth-toggle-link" id="show-signup">Não tem uma conta? Crie uma</a>
+                <p id="login-error" class="auth-error"></p>
+            </form>
+            <form id="signup-form">
+                <h2>Criar Conta</h2>
+                <div class="auth-form">
+                    <input type="text" id="signup-username" placeholder="Escolha um nome de usuário" required>
+                    <input type="password" id="signup-password" placeholder="Crie uma senha" required>
+                    <button type="submit">Criar Conta</button>
+                </div>
+                <a class="auth-toggle-link" id="show-login">Já tem uma conta? Faça login</a>
+                <p id="signup-error" class="auth-error"></p>
+            </form>
+        </div>
     </div>
-  </div>
-</header>
+    
+    <!-- NOVO: Elemento para a notificação -->
+    <div id="notification" class="notification"></div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const genres = ["Ação", "Aventura", "RPG", "Estratégia", "Simulação", "Esportes", "Corrida", "Luta", "Puzzle", "Terror", "Indie", "Casual"];
 
-<main class="gallery">
-  <div class="game-box" data-id="1" data-name="Jogo A"></div>
-  <div class="game-box" data-id="2" data-name="Jogo B"></div>
-  <div class="game-box" data-id="3" data-name="Jogo C"></div>
-  <div class="game-box" data-id="4" data-name="Jogo D"></div>
-  <div class="game-box" data-id="5" data-name="Jogo E"></div>
-  <div class="game-box" data-id="6" data-name="Jogo F"></div>
-</main>
+            const allGames = [
+                { id: 1, name: "Cyber Odyssey", genre: "RPG", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(14).jpeg", rating: 5, description: "Explore um vasto mundo cyberpunk, aprimore seu personagem com tecnologia de ponta e desvende uma conspiração que ameaça a cidade." }, 
 
-<script>
-  const games = [
-    { id: 1, name: "Jogo A" },
-    { id: 2, name: "Jogo B" },
-    { id: 3, name: "Jogo C" },
-    { id: 4, name: "Jogo D" },
-    { id: 5, name: "Jogo E" },
-    { id: 6, name: "Jogo F" }
-  ];
+                { id: 2, name: "Floresta Mística", genre: "Aventura", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(15).jpeg", rating: 4, description: "Viaje por uma floresta encantada, resolva quebra-cabeças antigos e faça amizade com criaturas mágicas para salvar o reino." }, 
 
-  const gallery = document.getElementById("gallery");
+                { id: 3, name: "Galaxy Racers", genre: "Corrida", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(5).png", rating: 4, description: "Pilote naves ultrarrápidas em circuitos intergalácticos, desvie de asteroides e use power-ups para chegar em primeiro lugar." }, 
 
-  games.forEach(game => {
-    const box = document.createElement("div");
-    box.classList.add("game-box");
-    box.dataset.id = game.id;
-    box.textContent = game.name;
-    gallery.appendChild(box);
-  });
-</script>
+                { id: 4, name: "Arena dos Campeões", genre: "Luta", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(9).jpeg", rating: 5, description: "Escolha seu lutador e entre na arena para combates intensos. Domine combos e habilidades especiais para se tornar o campeão." }, 
 
+                { id: 5, name: "Puzzle Minds", genre: "Puzzle", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(16).jpeg", rating: 3, description: "Desafie sua mente com centenas de quebra-cabeças lógicos que testarão seu raciocínio e criatividade ao máximo." }, 
+
+                { id: 6, name: "Tiny Pixel Adventure", genre: "Indie", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(17).jpeg", rating: 4, description: "Uma jornada nostálgica em pixel art cheia de plataformas desafiadoras, segredos escondidos e personagens carismáticos." }, 
+
+                { id: 7, name: "Fuga Sombria", genre: "Terror", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(18).jpeg", rating: 5, description: "Você acordou em um lugar escuro e desconhecido. Resolva enigmas e fuja de uma presença aterrorizante antes que seja tarde demais." }, 
+
+                { id: 8, name: "City Builder Pro", genre: "Simulação", imageUrl: "https://source.unsplash.com/random/400x300?city,simulation", rating: 4, description: "Construa e gerencie a metrópole dos seus sonhos. Planeje zonas, estradas, serviços e veja sua cidade prosperar ou entrar em colapso." }, 
+
+                { id: 9, name: "Fórmula Z", genre: "Corrida", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(21).jpeg", rating: 5, description: "Sinta a adrenalina das corridas de monopostos. Ajuste seu carro, escolha a estratégia de pneus e dispute o campeonato mundial." }, 
+
+                { id: 10, name: "Reino em Guerra", genre: "Estratégia", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(20).jpeg", rating: 4, description: "Comande exércitos, colete recursos e expanda seu império em um jogo de estratégia em tempo real com batalhas épicas." }, 
+
+                { id: 11, name: "Super Soccer Stars", genre: "Esportes", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(19).jpeg", rating: 3, description: "Monte seu time dos sonhos e dispute partidas de futebol emocionantes. Dribles, chutes e gols espetaculares esperam por você." }, 
+
+                { id: 12, name: "Ataque Alien", genre: "Ação", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(18).jpeg", rating: 4, description: "Defenda a Terra de uma invasão alienígena. Use um arsenal de armas futuristas para destruir hordas de inimigos do espaço." }, 
+
+                { id: 13, name: "Crônicas do Dragão", genre: "RPG", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(17).jpeg", rating: 5, description: "Em um mundo de fantasia, você é o escolhido para domar dragões e lutar contra um mal antigo que ressurge das sombras." }, 
+
+                { id: 14, name: "Fazenda Feliz", genre: "Casual", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(19).jpeg", rating: 3, description: "Relaxe e cuide da sua própria fazenda. Plante, colha, crie animais e venda seus produtos na cidade neste jogo casual e divertido." }, 
+
+                { id: 15, name: "Street Combatt V", genre: "Luta", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(15).jpeg", rating: 4, description: "Lutas de rua intensas com um elenco diversificado de personagens, cada um com seu estilo de luta e golpes especiais únicos." }, 
+
+                { id: 16, name: "Exploradores de Tumbas", genre: "Aventura", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(14).jpeg", rating: 4, description: "Explore ruínas antigas, desvende mistérios de civilizações perdidas e escape de armadilhas mortais em busca de tesouros." }, 
+
+                { id: 17, name: "War Strategy 3", genre: "Estratégia", "imageUrl": "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(13).jpeg", "rating": 5, description: "Planeje suas táticas em um campo de batalha moderno. Controle tanques, infantaria e força aérea para superar seus adversários." }, 
+
+                { id: 18, name: "Basket Kings", genre: "Esportes", "imageUrl": "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(12).jpeg", "rating": 4, description: "Viva a emoção do basquete de rua. Participe de torneios 3x3, realize enterradas incríveis e torne-se o rei da quadra." }, 
+
+                { id: 19, name: "The Silent Room", genre: "Terror", "imageUrl": "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(11).jpeg", "rating": 5, description: "Preso em uma casa assombrada, você deve resolver o mistério de seu passado sombrio para conseguir escapar. Cuidado com os sons." }, 
+
+                { id: 20, name: "Block Blast", genre: "Puzzle", "imageUrl": "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(10).jpeg", "rating": 3, description: "Um jogo de puzzle viciante onde você deve encaixar blocos para limpar linhas. Simples de aprender, difícil de dominar." } 
+
+            ]; 
+
+            let currentUser = null;
+            let users = JSON.parse(localStorage.getItem('gameHubUsers')) || [];
+            let allUserData = JSON.parse(localStorage.getItem('gameHubUserData')) || {};
+            
+            let favorites = [];
+            let history = [];
+            let comments = {};
+            let currentOpenGameId = null;
+
+            // Seletores de elementos
+            const gameContainer = document.getElementById('game-container');
+            const searchInput = document.querySelector('.search-input');
+            const menuToggleBtn = document.getElementById('menu-toggle-btn');
+            const sideMenu = document.getElementById('side-menu');
+            const homeLink = document.getElementById('home-link');
+            const favoritesLink = document.getElementById('favorites-link');
+            const historyLink = document.getElementById('history-link');
+            const clearFavoritesBtn = document.getElementById('clear-favorites-btn');
+            const clearHistoryBtn = document.getElementById('clear-history-btn');
+            const genreToggleBtn = document.getElementById('genre-toggle-btn');
+            const genreFilterContainer = document.getElementById('genre-filter-container');
+            const gameDetailView = document.getElementById('game-detail-view');
+            const backToGridBtn = document.getElementById('back-to-grid-btn');
+            const detailContent = document.getElementById('detail-content');
+            const notificationEl = document.getElementById('notification'); // NOVO
+            const profileAvatarBtn = document.getElementById('profile-avatar-btn');
+            const userDropdown = document.getElementById('user-dropdown');
+            const dropdownUsername = document.getElementById('dropdown-username');
+            const logoutBtn = document.getElementById('logout-btn');
+            const authModal = document.getElementById('auth-modal');
+            const authModalCloseBtn = document.getElementById('auth-modal-close-btn');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const showSignup = document.getElementById('show-signup');
+            const showLogin = document.getElementById('show-login');
+
+            // --- FUNÇÕES ---
+
+            const normalizeText = (text) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+            const renderGames = (gamesToRender) => {
+                gameContainer.innerHTML = '';
+                if (gamesToRender.length === 0) {
+                    gameContainer.innerHTML = `<p style="color: var(--text-color); font-size: 1.2rem;">Nenhum jogo encontrado.</p>`;
+                    return;
+                }
+                gamesToRender.forEach(game => {
+                    const isFavorited = favorites.includes(game.id);
+                    const stars = '★'.repeat(game.rating) + '☆'.repeat(5 - game.rating);
+                    const gameCard = `
+                        <div class="game-card" data-game-id="${game.id}">
+                            <img src="${game.imageUrl}" alt="${game.name}">
+                            <div class="card-info">
+                                <div class="card-header">
+                                    <h3>${game.name}</h3>
+                                    <button class="fav-btn ${isFavorited ? 'favorited' : ''}" data-id="${game.id}"><i class="material-icons">favorite</i></button>
+                                </div>
+                                <p class="card-genre">${game.genre}</p>
+                                <div class="card-footer">
+                                    <div class="rating">${stars}</div>
+                                    <button class="play-btn">Jogar</button>
+                                </div>
+                            </div>
+                        </div>`;
+                    gameContainer.innerHTML += gameCard;
+                });
+            };
+            
+            // NOVO: Função para mostrar notificação
+            let notificationTimeout;
+            const showNotification = (message) => {
+                clearTimeout(notificationTimeout);
+                notificationEl.textContent = message;
+                notificationEl.classList.add('show');
+                notificationTimeout = setTimeout(() => {
+                    notificationEl.classList.remove('show');
+                }, 3000); // A mensagem some após 3 segundos
+            };
+
+            const saveUserData = () => {
+                if (!currentUser) return;
+                allUserData[currentUser] = { favorites, history, comments };
+                localStorage.setItem('gameHubUserData', JSON.stringify(allUserData));
+            };
+
+            const loadUserData = () => {
+                const loggedInUser = localStorage.getItem('gameHubCurrentUser');
+                if (loggedInUser) {
+                    currentUser = loggedInUser;
+                    const userData = allUserData[currentUser] || { favorites: [], history: [], comments: {} };
+                    favorites = userData.favorites;
+                    history = userData.history;
+                    comments = userData.comments;
+                } else {
+                    currentUser = null;
+                    favorites = [];
+                    history = [];
+                    comments = {};
+                }
+                updateUIForAuthState();
+            };
+
+            const updateUIForAuthState = () => {
+                if (currentUser) {
+                    dropdownUsername.textContent = currentUser;
+                } else {
+                    userDropdown.classList.remove('visible');
+                }
+            };
+            
+            const handleLogout = () => {
+                localStorage.removeItem('gameHubCurrentUser');
+                currentUser = null;
+                loadUserData();
+                renderGames(allGames);
+            };
+            
+            const renderCommentsForDetailView = (gameId) => {
+                const commentsList = document.getElementById('detail-comments-list');
+                if (!commentsList) return;
+                commentsList.innerHTML = '';
+                const gameComments = comments[gameId] || [];
+                if (gameComments.length === 0) {
+                    commentsList.innerHTML = '<p>Nenhum comentário ainda. Seja o primeiro!</p>';
+                    return;
+                }
+                gameComments.forEach(comment => {
+                    commentsList.innerHTML += `<div class="comment-item">${comment}</div>`;
+                });
+            };
+
+            const showGameDetails = (gameId) => {
+                currentOpenGameId = gameId;
+                const game = allGames.find(g => g.id === gameId);
+                if (!game) return;
+
+                if (currentUser && !history.includes(gameId)) {
+                    history.unshift(gameId);
+                    history = history.slice(0, 10);
+                    saveUserData();
+                }
+
+                gameContainer.classList.add('hidden');
+                
+                const stars = '★'.repeat(game.rating) + '☆'.repeat(5 - game.rating);
+                detailContent.innerHTML = `
+                    <div class="detail-left">
+                        <img src="${game.imageUrl.replace('400x300', '800x600')}" alt="${game.name}">
+                    </div>
+                    <div class="detail-right">
+                        <div class="detail-info">
+                            <h2>${game.name}</h2>
+                            <p>${game.genre}</p>
+                            <div class="rating">${stars}</div>
+                            <p class="detail-description">${game.description}</p>
+                        </div>
+                        <div class="detail-comments">
+                             <h3>Comentários</h3>
+                            <div id="detail-comments-list"></div>
+                            <form id="detail-comment-form">
+                                <textarea id="detail-comment-input" placeholder="Escreva seu comentário..." required></textarea>
+                                <button type="submit">Enviar</button>
+                            </form>
+                        </div>
+                    </div>
+                `;
+                
+                renderCommentsForDetailView(gameId);
+                
+                const detailCommentForm = document.getElementById('detail-comment-form');
+                detailCommentForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    if (!currentUser) {
+                        showNotification('Você precisa fazer login para comentar!');
+                        authModal.style.display = 'block';
+                        return;
+                    }
+                    const commentInput = document.getElementById('detail-comment-input');
+                    const newComment = commentInput.value.trim();
+                    if (newComment && currentOpenGameId) {
+                        if (!comments[currentOpenGameId]) comments[currentOpenGameId] = [];
+                        comments[currentOpenGameId].push(newComment);
+                        saveUserData();
+                        renderCommentsForDetailView(currentOpenGameId);
+                        commentInput.value = '';
+                    }
+                });
+                
+                gameDetailView.classList.remove('hidden');
+            };
+
+            const hideGameDetails = () => {
+                gameDetailView.classList.add('hidden');
+                gameContainer.classList.remove('hidden');
+                currentOpenGameId = null;
+            };
+
+            // --- EVENTOS ---
+            menuToggleBtn.addEventListener('click', () => sideMenu.classList.toggle('active'));
+            homeLink.addEventListener('click', (e) => { e.preventDefault(); hideGameDetails(); renderGames(allGames); sideMenu.classList.remove('active'); searchInput.value = ''; });
+            favoritesLink.addEventListener('click', (e) => { e.preventDefault(); hideGameDetails(); const favGames = allGames.filter(g => favorites.includes(g.id)); renderGames(favGames); sideMenu.classList.remove('active'); });
+            historyLink.addEventListener('click', (e) => { e.preventDefault(); hideGameDetails(); const historyGames = history.map(id => allGames.find(g => g.id === id) || null).filter(Boolean); renderGames(historyGames); sideMenu.classList.remove('active'); });
+            clearFavoritesBtn.addEventListener('click', (e) => { e.preventDefault(); if (confirm('Tem certeza?')) { favorites = []; saveUserData(); renderGames(allGames); sideMenu.classList.remove('active'); } });
+            clearHistoryBtn.addEventListener('click', (e) => { e.preventDefault(); if (confirm('Tem certeza?')) { history = []; saveUserData(); renderGames(allGames); sideMenu.classList.remove('active'); } });
+
+            searchInput.addEventListener('input', (e) => {
+                hideGameDetails();
+                const searchTerm = normalizeText(e.target.value);
+                const filteredGames = allGames.filter(game => normalizeText(game.name).includes(searchTerm) || normalizeText(game.genre).includes(searchTerm));
+                renderGames(filteredGames);
+            });
+
+            genreToggleBtn.addEventListener('click', () => genreFilterContainer.classList.toggle('visible'));
+            genreFilterContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('genre-btn')) {
+                    const selectedGenre = e.target.dataset.genre;
+                    renderGames(selectedGenre === 'all' ? allGames : allGames.filter(g => g.genre === selectedGenre));
+                    genreFilterContainer.classList.remove('visible');
+                }
+            });
+            
+            gameContainer.addEventListener('click', (e) => {
+                const favButton = e.target.closest('.fav-btn');
+                if (favButton) {
+                    e.stopPropagation();
+                    if (!currentUser) {
+                        showNotification('Você precisa fazer login para favoritar jogos!');
+                        authModal.style.display = 'block';
+                        return;
+                    }
+                    const gameId = parseInt(favButton.dataset.id, 10);
+                    favButton.classList.add('animate-heart');
+                    favButton.addEventListener('animationend', () => favButton.classList.remove('animate-heart'), { once: true });
+                    if (favorites.includes(gameId)) {
+                        favorites = favorites.filter(id => id !== gameId);
+                        favButton.classList.remove('favorited');
+                    } else {
+                        favorites.push(gameId);
+                        favButton.classList.add('favorited');
+                    }
+                    saveUserData();
+                    return;
+                }
+
+                // NOVO: Lógica para o botão de jogar
+                const playButton = e.target.closest('.play-btn');
+                if (playButton) {
+                    e.stopPropagation(); // Impede que o clique abra a tela de detalhes
+                    showNotification("Este jogo ainda está em desenvolvimento!");
+                    return;
+                }
+
+                const card = e.target.closest('.game-card');
+                if (card) {
+                    const gameId = parseInt(card.dataset.gameId, 10);
+                    showGameDetails(gameId);
+                }
+            });
+            
+            backToGridBtn.addEventListener('click', hideGameDetails);
+
+            profileAvatarBtn.addEventListener('click', () => {
+                if (currentUser) {
+                    userDropdown.classList.toggle('visible');
+                } else {
+                    authModal.style.display = 'block';
+                }
+            });
+            
+            logoutBtn.addEventListener('click', handleLogout);
+            authModalCloseBtn.addEventListener('click', () => authModal.style.display = 'none');
+            window.addEventListener('click', (e) => { if (e.target === authModal) authModal.style.display = 'none'; });
+
+            showSignup.addEventListener('click', (e) => { e.preventDefault(); loginForm.style.display = 'none'; signupForm.style.display = 'block'; });
+            showLogin.addEventListener('click', (e) => { e.preventDefault(); signupForm.style.display = 'none'; loginForm.style.display = 'block'; });
+            
+            signupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('signup-username').value.trim();
+                const password = document.getElementById('signup-password').value.trim();
+                const errorEl = document.getElementById('signup-error');
+                if (users.find(user => user.username === username)) {
+                    errorEl.textContent = 'Este nome de usuário já existe.';
+                    return;
+                }
+                users.push({ username, password });
+                localStorage.setItem('gameHubUsers', JSON.stringify(users));
+                localStorage.setItem('gameHubCurrentUser', username);
+                loadUserData();
+                renderGames(allGames);
+                authModal.style.display = 'none';
+                signupForm.reset();
+            });
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('login-username').value.trim();
+                const password = document.getElementById('login-password').value.trim();
+                const errorEl = document.getElementById('login-error');
+                const user = users.find(u => u.username === username && u.password === password);
+                if (user) {
+                    localStorage.setItem('gameHubCurrentUser', username);
+                    loadUserData();
+                    renderGames(allGames);
+                    authModal.style.display = 'none';
+                    loginForm.reset();
+                } else {
+                    errorEl.textContent = 'Usuário ou senha inválidos.';
+                }
+            });
+
+            const populateGenres = () => {
+                let buttonsHTML = '<button class="genre-btn" data-genre="all">Todos</button>';
+                genres.forEach(genre => { buttonsHTML += `<button class="genre-btn" data-genre="${genre}">${genre}</button>`; });
+                genreFilterContainer.innerHTML = buttonsHTML;
+            };
+            populateGenres();
+            loadUserData();
+            renderGames(allGames);
+        });
+    </script>
 </body>
 </html>
+

@@ -6,6 +6,11 @@
     <title>DevGames Hub</title>
     <!-- Adicionando o Google Icons para os ícones -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonte para o Jogo Tick Adventure -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         /* CSS - Estilização baseada no seu Design */
         :root {
@@ -30,6 +35,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background-color 0.3s;
+            overflow-x: hidden;
         }
 
         /* Cabeçalho Principal */
@@ -116,7 +122,6 @@
         }
 
         .profile-avatar {
-            /* MODIFICADO: Estilos ajustados para um ícone em vez de uma imagem */
             font-size: 44px;
             color: var(--text-color);
             cursor: pointer;
@@ -226,7 +231,7 @@
 
         /* Grade de Jogos */
         main { padding: 2rem; }
-        #game-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
+        #game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
 
         /* Card do Jogo */
         .game-card { background-color: var(--card-bg-color); color: var(--card-text-color); border-radius: 8px; overflow: hidden; border: 4px solid var(--primary-color); display: flex; flex-direction: column; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; cursor: pointer; }
@@ -247,7 +252,6 @@
         .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
         .rating { color: #f39c12; }
 
-        /* NOVO: Estilo para o botão de jogar */
         .play-btn {
             background-color: var(--primary-color);
             color: white;
@@ -260,7 +264,7 @@
         }
         
         .play-btn:hover {
-            background-color: #d81b60; /* Um tom de rosa mais escuro */
+            background-color: #d81b60;
         }
         
         /* Estilos do Modal Genérico de Autenticação */
@@ -278,12 +282,12 @@
         .auth-form button { background-color: var(--primary-color); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; font-size: 1rem; }
         .auth-toggle-link { color: var(--primary-color); cursor: pointer; margin-top: 1rem; display: inline-block; }
         .auth-error { color: #e74c3c; margin-top: 1rem; text-align: center; }
-        #signup-form { display: none; } /* Escondido por padrão */
+        #signup-form { display: none; }
 
-        /* Estilos da Visão de Detalhes */
+        /* Estilos da Visão de Detalhes e do Jogo */
         .hidden { display: none !important; }
 
-        #game-detail-view {
+        #game-detail-view, #game-view-race, #tick-adventure-view {
             animation: fadeIn 0.5s;
         }
 
@@ -322,27 +326,14 @@
             border: 2px solid var(--primary-color);
         }
 
-        .detail-info h2 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .detail-info .rating {
-            font-size: 1.5rem;
-            margin-top: 1rem;
-        }
-
-        .detail-description {
-            margin-top: 1.5rem;
-            line-height: 1.6;
-            font-size: 1rem;
-        }
-
+        .detail-info h2 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .detail-info .rating { font-size: 1.5rem; margin-top: 1rem; }
+        .detail-description { margin-top: 1.5rem; line-height: 1.6; font-size: 1rem; }
         #detail-comments-list { margin-top: 1rem; margin-bottom: 1.5rem; max-height: 300px; overflow-y: auto; padding-right: 10px; }
         .comment-item { background-color: var(--search-bg-color); padding: 10px; border-radius: 5px; margin-bottom: 8px; border-left: 3px solid var(--primary-color); }
         #detail-comment-form textarea { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #555; background-color: var(--search-bg-color); color: var(--text-color); resize: vertical; min-height: 70px; font-size: 1rem; }
         #detail-comment-form button { background-color: var(--primary-color); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; float: right; font-weight: bold; }
-
-        /* NOVO: Estilo para a notificação */
+        
         .notification {
             position: fixed;
             bottom: 20px;
@@ -363,6 +354,112 @@
             visibility: visible;
             transform: translate(-50%, 0);
         }
+
+        /* --- ESTILOS DO JOGO CORRIDA INFINITA (CRIADO PELO USUÁRIO) --- */
+        #game-view-race {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-color);
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #infinite-race-container {
+            user-select: none;
+            overflow: hidden;
+            touch-action: none;
+            background-color: #2c5234;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.05) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 2px, transparent 2px);
+            background-size: 50px 50px;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 0;
+        }
+        #road {
+            background-color: #4a5568; /* Cinza da estrada */
+            overflow: hidden;
+            position: relative;
+        }
+        .lane-marker {
+            position: absolute;
+            width: 10px;
+            height: 100px;
+            background-color: #a0aec0;
+        }
+        .car {
+            position: absolute;
+            width: 40px;
+            height: 72px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .coin {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23FBBF24" stroke="%23F59E0B" stroke-width="8"/><text x="50" y="68" font-size="50" font-family="Arial, sans-serif" fill="%23F59E0B" text-anchor="middle" font-weight="bold">C</text></svg>');
+            background-size: contain;
+        }
+        .obstacle {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="5" y="5" width="90" height="90" rx="5" fill="%23854d0e" stroke="%235c3c0a" stroke-width="4"/><line x1="5" y1="50" x2="95" y2="50" stroke="%235c3c0a" stroke-width="4"/><line x1="50" y1="5" x2="50" y2="95" stroke="%235c3c0a" stroke-width="4"/><rect x="20" y="20" width="60" height="60" fill="none" stroke="%23a16207" stroke-width="2" stroke-dasharray="8 8"/></svg>');
+            background-size: contain;
+        }
+        #player-car {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300"><rect x="25" y="0" width="150" height="250" rx="40" fill="%233B82F6"/><rect x="10" y="50" width="180" height="150" rx="30" fill="%2393C5FD" fill-opacity="0.8"/><rect x="40" y="240" width="120" height="50" rx="20" fill="%231E293B"/><rect x="0" y="40" width="25" height="70" rx="10" fill="%231E293B"/><rect x="175" y="40" width="25" height="70" rx="10" fill="%231E293B"/><rect x="0" y="190" width="25" height="70" rx="10" fill="%231E293B"/><rect x="175" y="190" width="25" height="70" rx="10" fill="%231E293B"/></svg>');
+        }
+        .enemy-car {
+             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300"><rect x="25" y="0" width="150" height="250" rx="40" fill="%23EF4444"/><rect x="10" y="50" width="180" height="150" rx="30" fill="%23FCA5A5" fill-opacity="0.8"/><rect x="40" y="240" width="120" height="50" rx="20" fill="%231E293B"/><rect x="0" y="40" width="25" height="70" rx="10" fill="%231E293B"/><rect x="175" y="40" width="25" height="70" rx="10" fill="%231E293B"/><rect x="0" y="190" width="25" height="70" rx="10" fill="%231E293B"/><rect x="175" y="190" width="25" height="70" rx="10" fill="%231E293B"/></svg>');
+        }
+
+        /* --- ESTILOS DO JOGO TICK ADVENTURE (NOVO) --- */
+        #tick-adventure-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #1a202c;
+            color: #e2e8f0;
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Press Start 2P', cursive;
+            overflow: hidden;
+        }
+
+        #tick-game-wrapper {
+            width: min(95vw, calc((100vh - 160px) * (16 / 9)), 1280px);
+            aspect-ratio: 16 / 9;
+        }
+        #tick-adventure-view canvas {
+            background: #87CEEB;
+            display: block;
+            border-radius: 8px;
+            width: 100%;
+            height: 100%;
+        }
+        #tick-adventure-view #touch-controls {
+            display: none; 
+        }
+        @media (max-width: 768px) {
+            #tick-adventure-view #touch-controls {
+                display: flex;
+            }
+        }
+
 
         /* KEYFRAMES DAS ANIMAÇÕES */
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
@@ -406,12 +503,65 @@
     </aside>
 
     <main>
-        <div id="game-container"></div>
+        <div id="game-grid"></div>
         
         <div id="game-detail-view" class="hidden">
              <button id="back-to-grid-btn" class="back-btn">&larr; Voltar</button>
              <div id="detail-content"></div>
         </div>
+
+        <!-- Tela do Jogo Corrida Infinita -->
+        <div id="game-view-race" class="hidden p-4">
+             <button id="back-to-menu-from-race-btn" class="back-btn absolute top-6 left-6 z-20">&larr; Voltar</button>
+            <div id="infinite-race-container" class="relative w-full h-full">
+                <div id="road" class="relative w-4/5 h-full mx-auto"></div>
+                <div id="player-car" class="car"></div>
+                <div class="absolute top-0 left-0 right-0 p-4 flex items-center justify-center bg-black bg-opacity-25 z-10">
+                    <h1 class="text-xl md:text-3xl font-bold text-white">
+                        Pontuação: <span id="score">0</span> | Moedas: <span id="coin-count">0</span> 🪙
+                    </h1>
+                </div>
+                <div id="start-screen" class="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center text-white text-center p-4 z-10">
+                    <h2 class="text-5xl font-extrabold mb-4">Corrida Infinita</h2>
+                    <p class="text-xl mb-6">Use as SETAS para dirigir e 'P' para pausar.</p>
+                    <button id="start-button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg text-2xl shadow-lg transition-transform transform hover:scale-105">
+                        Iniciar Jogo
+                    </button>
+                </div>
+                <div id="game-over-screen" class="hidden absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center text-white text-center p-4 z-10">
+                    <h2 class="text-6xl font-extrabold text-red-500 mb-4">Fim de Jogo!</h2>
+                    <p class="text-2xl mb-2">Sua pontuação final foi:</p>
+                    <p id="final-score" class="text-4xl font-bold mb-8">0</p>
+                    <button id="restart-button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg text-2xl shadow-lg transition-transform transform hover:scale-105">
+                        Jogar Novamente
+                    </button>
+                </div>
+                <div id="pause-screen" class="hidden absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center text-white text-center p-4 z-10">
+                    <h2 class="text-6xl font-extrabold text-yellow-400 mb-4 animate-pulse">PAUSADO</h2>
+                    <p class="text-xl">Pressione 'P' para continuar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOVO: Tela do Jogo Tick Adventure -->
+        <div id="tick-adventure-view" class="hidden">
+            <button id="back-from-tick-adventure-btn" class="back-btn absolute top-6 left-6 z-20">&larr; Voltar</button>
+            <div class="text-center mb-4">
+                <h1 class="text-3xl md:text-4xl font-bold text-yellow-300 tracking-wider">Tick Adventure</h1>
+                <p class="text-sm text-gray-400 mt-2">Use as Setas ou WASD para mover. Pule com Seta Cima, W ou Espaço.</p>
+            </div>
+            <div id="tick-game-wrapper" class="relative rounded-lg shadow-2xl">
+               <canvas id="gameCanvas"></canvas>
+            </div>
+            <div id="touch-controls" class="w-full max-w-md mt-4 flex justify-between px-4">
+                <div class="flex space-x-4">
+                    <button id="left-btn" class="w-20 h-20 bg-gray-700 text-yellow-300 text-3xl rounded-full shadow-lg active:bg-gray-600 select-none">←</button>
+                    <button id="right-btn" class="w-20 h-20 bg-gray-700 text-yellow-300 text-3xl rounded-full shadow-lg active:bg-gray-600 select-none">→</button>
+                </div>
+                <button id="jump-btn" class="w-20 h-20 bg-blue-600 text-white text-3xl rounded-full shadow-lg active:bg-blue-500 select-none">↑</button>
+            </div>
+        </div>
+
     </main>
 
     <!-- Modal de Login/Criação de Conta -->
@@ -441,7 +591,6 @@
         </div>
     </div>
     
-    <!-- NOVO: Elemento para a notificação -->
     <div id="notification" class="notification"></div>
 
     <script>
@@ -450,59 +599,41 @@
             const genres = ["Ação", "Aventura", "RPG", "Estratégia", "Simulação", "Esportes", "Corrida", "Luta", "Puzzle", "Terror", "Indie", "Casual"];
 
             const allGames = [
-                { id: 1, name: "Cyber Odyssey", genre: "RPG", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(14).jpeg", rating: 5, description: "Explore um vasto mundo cyberpunk, aprimore seu personagem com tecnologia de ponta e desvende uma conspiração que ameaça a cidade." }, 
+                { id: 1, name: "Cyber Odyssey", genre: "RPG", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(14).jpeg", rating: 5, description: "Explore um vasto mundo cyberpunk, aprimore seu personagem com tecnologia de ponta e desvende uma conspiração que ameaça a cidade." },
+                { id: 2, name: "Floresta Mística", genre: "Aventura", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(15).jpeg", rating: 4, description: "Viaje por uma floresta encantada, resolva quebra-cabeças antigos e faça amizade com criaturas mágicas para salvar o reino." },
+                { id: 3, name: "Galaxy Racers", genre: "Corrida", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(5).png", rating: 4, description: "Pilote naves ultrarrápidas em circuitos intergalácticos, desvie de asteroides e use power-ups para chegar em primeiro lugar." },
+                { id: 4, name: "Arena dos Campeões", genre: "Luta", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(9).jpeg", rating: 5, description: "Escolha seu lutador e entre na arena para combates intensos. Domine combos e habilidades especiais para se tornar o campeão." },
+                { id: 5, name: "Puzzle Minds", genre: "Puzzle", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(16).jpeg", rating: 3, description: "Desafie sua mente com centenas de quebra-cabeças lógicos que testarão seu raciocínio e criatividade ao máximo." },
+                { id: 6, name: "Tiny Pixel Adventure", genre: "Indie", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(17).jpeg", rating: 4, description: "Uma jornada nostálgica em pixel art cheia de plataformas desafiadoras, segredos escondidos e personagens carismáticos." },
+                { id: 7, name: "Fuga Sombria", genre: "Terror", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(18).jpeg", rating: 5, description: "Você acordou em um lugar escuro e desconhecido. Resolva enigmas e fuja de uma presença aterrorizante antes que seja tarde demais." },
+                { id: 8, name: "City Builder Pro", genre: "Simulação", imageUrl: "https://source.unsplash.com/random/400x300?city,simulation", rating: 4, description: "Construa e gerencie a metrópole dos seus sonhos. Planeje zonas, estradas, serviços e veja sua cidade prosperar ou entrar em colapso." },
+                { id: 9, name: "Corrida Infinita", genre: "Corrida", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(21).jpeg", rating: 5, description: "Sinta a adrenalina das corridas de monopostos. Ajuste seu carro, escolha a estratégia de pneus e dispute o campeonato mundial." },
+                { id: 10, name: "Reino em Guerra", genre: "Estratégia", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(20).jpeg", rating: 4, description: "Comande exércitos, colete recursos e expanda seu império em um jogo de estratégia em tempo real com batalhas épicas." },
+                { id: 11, name: "Super Soccer Stars", genre: "Esportes", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(19).jpeg", rating: 3, description: "Monte seu time dos sonhos e dispute partidas de futebol emocionantes. Dribles, chutes e gols espetaculares esperam por você." },
+                { id: 12, name: "Ataque Alien", genre: "Ação", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(18).jpeg", rating: 4, description: "Defenda a Terra de uma invasão alienígena. Use um arsenal de armas futuristas para destruir hordas de inimigos do espaço." },
+                { id: 13, name: "Crônicas do Dragão", genre: "RPG", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(17).jpeg", rating: 5, description: "Em um mundo de fantasia, você é o escolhido para domar dragões e lutar contra um mal antigo que ressurge das sombras." },
+                { id: 14, name: "Fazenda Feliz", genre: "Casual", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(19).jpeg", rating: 3, description: "Relaxe e cuide da sua própria fazenda. Plante, colha, crie animais e venda seus produtos na cidade neste jogo casual e divertido." },
+                { id: 15, name: "Street Combatt V", genre: "Luta", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(15).jpeg", rating: 4, description: "Lutas de rua intensas com um elenco diversificado de personagens, cada um com seu estilo de luta e golpes especiais únicos." },
+                { id: 16, name: "Exploradores de Tumbas", genre: "Aventura", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(14).jpeg", rating: 4, description: "Explore ruínas antigas, desvende mistérios de civilizações perdidas e escape de armadilhas mortais em busca de tesouros." },
+                { id: 17, name: "War Strategy 3", genre: "Estratégia", "imageUrl": "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(13).jpeg", "rating": 5, description: "Planeje suas táticas em um campo de batalha moderno. Controle tanques, infantaria e força aérea para superar seus adversários." },
+                { id: 18, name: "Basket Kings", genre: "Esportes", "imageUrl": "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(12).jpeg", "rating": 4, description: "Viva a emoção do basquete de rua. Participe de torneios 3x3, realize enterradas incríveis e torne-se o rei da quadra." },
+                { id: 19, name: "The Silent Room", genre: "Terror", "imageUrl": "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(11).jpeg", "rating": 5, description: "Preso em uma casa assombrada, você deve resolver o mistério de seu passado sombrio para conseguir escapar. Cuidado com os sons." },
+                { id: 20, name: "Block Blast", genre: "Puzzle", "imageUrl": "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(10).jpeg", "rating": 3, description: "Um jogo de puzzle viciante onde você deve encaixar blocos para limpar linhas. Simples de aprender, difícil de dominar." },
+                // NOVO JOGO ADICIONADO
+                { id: 21, name: "Tick Adventure", genre: "Aventura", imageUrl: "https://source.unsplash.com/random/400x300?pixel,platformer", rating: 5, description: "Uma aventura de plataforma com estilo retro! Pule sobre inimigos, colete moedas e power-ups, e explore fases geradas proceduralmente. Personalize seu personagem na loja!" },
+            ];
 
-                { id: 2, name: "Floresta Mística", genre: "Aventura", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(15).jpeg", rating: 4, description: "Viaje por uma floresta encantada, resolva quebra-cabeças antigos e faça amizade com criaturas mágicas para salvar o reino." }, 
-
-                { id: 3, name: "Galaxy Racers", genre: "Corrida", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(5).png", rating: 4, description: "Pilote naves ultrarrápidas em circuitos intergalácticos, desvie de asteroides e use power-ups para chegar em primeiro lugar." }, 
-
-                { id: 4, name: "Arena dos Campeões", genre: "Luta", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(9).jpeg", rating: 5, description: "Escolha seu lutador e entre na arena para combates intensos. Domine combos e habilidades especiais para se tornar o campeão." }, 
-
-                { id: 5, name: "Puzzle Minds", genre: "Puzzle", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(16).jpeg", rating: 3, description: "Desafie sua mente com centenas de quebra-cabeças lógicos que testarão seu raciocínio e criatividade ao máximo." }, 
-
-                { id: 6, name: "Tiny Pixel Adventure", genre: "Indie", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(17).jpeg", rating: 4, description: "Uma jornada nostálgica em pixel art cheia de plataformas desafiadoras, segredos escondidos e personagens carismáticos." }, 
-
-                { id: 7, name: "Fuga Sombria", genre: "Terror", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(18).jpeg", rating: 5, description: "Você acordou em um lugar escuro e desconhecido. Resolva enigmas e fuja de uma presença aterrorizante antes que seja tarde demais." }, 
-
-                { id: 8, name: "City Builder Pro", genre: "Simulação", imageUrl: "https://source.unsplash.com/random/400x300?city,simulation", rating: 4, description: "Construa e gerencie a metrópole dos seus sonhos. Planeje zonas, estradas, serviços e veja sua cidade prosperar ou entrar em colapso." }, 
-
-                { id: 9, name: "Fórmula Z", genre: "Corrida", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(21).jpeg", rating: 5, description: "Sinta a adrenalina das corridas de monopostos. Ajuste seu carro, escolha a estratégia de pneus e dispute o campeonato mundial." }, 
-
-                { id: 10, name: "Reino em Guerra", genre: "Estratégia", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(20).jpeg", rating: 4, description: "Comande exércitos, colete recursos e expanda seu império em um jogo de estratégia em tempo real com batalhas épicas." }, 
-
-                { id: 11, name: "Super Soccer Stars", genre: "Esportes", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(19).jpeg", rating: 3, description: "Monte seu time dos sonhos e dispute partidas de futebol emocionantes. Dribles, chutes e gols espetaculares esperam por você." }, 
-
-                { id: 12, name: "Ataque Alien", genre: "Ação", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(18).jpeg", rating: 4, description: "Defenda a Terra de uma invasão alienígena. Use um arsenal de armas futuristas para destruir hordas de inimigos do espaço." }, 
-
-                { id: 13, name: "Crônicas do Dragão", genre: "RPG", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(17).jpeg", rating: 5, description: "Em um mundo de fantasia, você é o escolhido para domar dragões e lutar contra um mal antigo que ressurge das sombras." }, 
-
-                { id: 14, name: "Fazenda Feliz", genre: "Casual", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/images%20(19).jpeg", rating: 3, description: "Relaxe e cuide da sua própria fazenda. Plante, colha, crie animais e venda seus produtos na cidade neste jogo casual e divertido." }, 
-
-                { id: 15, name: "Street Combatt V", genre: "Luta", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(15).jpeg", rating: 4, description: "Lutas de rua intensas com um elenco diversificado de personagens, cada um com seu estilo de luta e golpes especiais únicos." }, 
-
-                { id: 16, name: "Exploradores de Tumbas", genre: "Aventura", imageUrl: "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(14).jpeg", rating: 4, description: "Explore ruínas antigas, desvende mistérios de civilizações perdidas e escape de armadilhas mortais em busca de tesouros." }, 
-
-                { id: 17, name: "War Strategy 3", genre: "Estratégia", "imageUrl": "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(13).jpeg", "rating": 5, description: "Planeje suas táticas em um campo de batalha moderno. Controle tanques, infantaria e força aérea para superar seus adversários." }, 
-
-                { id: 18, name: "Basket Kings", genre: "Esportes", "imageUrl": "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(12).jpeg", "rating": 4, description: "Viva a emoção do basquete de rua. Participe de torneios 3x3, realize enterradas incríveis e torne-se o rei da quadra." }, 
-
-                { id: 19, name: "The Silent Room", genre: "Terror", "imageUrl": "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(11).jpeg", "rating": 5, description: "Preso em uma casa assombrada, você deve resolver o mistério de seu passado sombrio para conseguir escapar. Cuidado com os sons." }, 
-
-                { id: 20, name: "Block Blast", genre: "Puzzle", "imageUrl": "https://uploads.onecompiler.io/4384tr7ru/43xszcj3j/download%20(10).jpeg", "rating": 3, description: "Um jogo de puzzle viciante onde você deve encaixar blocos para limpar linhas. Simples de aprender, difícil de dominar." } 
-
-            ]; 
-
+            // Variáveis de estado da aplicação
             let currentUser = null;
             let users = JSON.parse(localStorage.getItem('gameHubUsers')) || [];
             let allUserData = JSON.parse(localStorage.getItem('gameHubUserData')) || {};
-            
-            let favorites = [];
-            let history = [];
-            let comments = {};
+            let favorites = [], history = [], comments = {};
             let currentOpenGameId = null;
 
-            // Seletores de elementos
-            const gameContainer = document.getElementById('game-container');
+            // Seletores de elementos principais
+            const mainContent = document.querySelector('main');
+            const mainHeader = document.querySelector('.main-header');
+            const gameGrid = document.getElementById('game-grid');
             const searchInput = document.querySelector('.search-input');
             const menuToggleBtn = document.getElementById('menu-toggle-btn');
             const sideMenu = document.getElementById('side-menu');
@@ -516,7 +647,9 @@
             const gameDetailView = document.getElementById('game-detail-view');
             const backToGridBtn = document.getElementById('back-to-grid-btn');
             const detailContent = document.getElementById('detail-content');
-            const notificationEl = document.getElementById('notification'); // NOVO
+            const notificationEl = document.getElementById('notification');
+            
+            // Seletores de Autenticação
             const profileAvatarBtn = document.getElementById('profile-avatar-btn');
             const userDropdown = document.getElementById('user-dropdown');
             const dropdownUsername = document.getElementById('dropdown-username');
@@ -527,290 +660,605 @@
             const signupForm = document.getElementById('signup-form');
             const showSignup = document.getElementById('show-signup');
             const showLogin = document.getElementById('show-login');
+            const loginError = document.getElementById('login-error');
+            const signupError = document.getElementById('signup-error');
 
-            // --- FUNÇÕES ---
+            // Seletores das Telas de Jogo
+            const gameViewRace = document.getElementById('game-view-race');
+            const tickAdventureView = document.getElementById('tick-adventure-view');
+            const backToMenuFromRaceBtn = document.getElementById('back-to-menu-from-race-btn');
+            const backFromTickAdventureBtn = document.getElementById('back-from-tick-adventure-btn');
 
-            const normalizeText = (text) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            // Variáveis de estado dos jogos
+            let isRaceGameRunning = false;
+            let tickAdventureInitialized = false;
+            let tickAdventureAnimationId = null;
+            let tickAdventureGame = { reset: null }; // NOVO: Objeto para controlar o jogo
 
-            const renderGames = (gamesToRender) => {
-                gameContainer.innerHTML = '';
-                if (gamesToRender.length === 0) {
-                    gameContainer.innerHTML = `<p style="color: var(--text-color); font-size: 1.2rem;">Nenhum jogo encontrado.</p>`;
-                    return;
-                }
-                gamesToRender.forEach(game => {
-                    const isFavorited = favorites.includes(game.id);
-                    const stars = '★'.repeat(game.rating) + '☆'.repeat(5 - game.rating);
-                    const gameCard = `
-                        <div class="game-card" data-game-id="${game.id}">
-                            <img src="${game.imageUrl}" alt="${game.name}">
-                            <div class="card-info">
-                                <div class="card-header">
-                                    <h3>${game.name}</h3>
-                                    <button class="fav-btn ${isFavorited ? 'favorited' : ''}" data-id="${game.id}"><i class="material-icons">favorite</i></button>
-                                </div>
-                                <p class="card-genre">${game.genre}</p>
-                                <div class="card-footer">
-                                    <div class="rating">${stars}</div>
-                                    <button class="play-btn">Jogar</button>
-                                </div>
-                            </div>
-                        </div>`;
-                    gameContainer.innerHTML += gameCard;
-                });
-            };
-            
-            // NOVO: Função para mostrar notificação
-            let notificationTimeout;
-            const showNotification = (message) => {
-                clearTimeout(notificationTimeout);
+
+            // --- LÓGICA DO HUB DE JOGOS (Funções principais) ---
+
+            function showNotification(message) {
                 notificationEl.textContent = message;
                 notificationEl.classList.add('show');
-                notificationTimeout = setTimeout(() => {
+                setTimeout(() => {
                     notificationEl.classList.remove('show');
-                }, 3000); // A mensagem some após 3 segundos
-            };
+                }, 3000);
+            }
 
-            const saveUserData = () => {
-                if (!currentUser) return;
-                allUserData[currentUser] = { favorites, history, comments };
-                localStorage.setItem('gameHubUserData', JSON.stringify(allUserData));
-            };
-
-            const loadUserData = () => {
-                const loggedInUser = localStorage.getItem('gameHubCurrentUser');
-                if (loggedInUser) {
-                    currentUser = loggedInUser;
-                    const userData = allUserData[currentUser] || { favorites: [], history: [], comments: {} };
-                    favorites = userData.favorites;
-                    history = userData.history;
-                    comments = userData.comments;
-                } else {
-                    currentUser = null;
-                    favorites = [];
-                    history = [];
-                    comments = {};
-                }
-                updateUIForAuthState();
-            };
-
-            const updateUIForAuthState = () => {
-                if (currentUser) {
-                    dropdownUsername.textContent = currentUser;
-                } else {
-                    userDropdown.classList.remove('visible');
-                }
-            };
-            
-            const handleLogout = () => {
-                localStorage.removeItem('gameHubCurrentUser');
-                currentUser = null;
-                loadUserData();
-                renderGames(allGames);
-            };
-            
-            const renderCommentsForDetailView = (gameId) => {
-                const commentsList = document.getElementById('detail-comments-list');
-                if (!commentsList) return;
-                commentsList.innerHTML = '';
-                const gameComments = comments[gameId] || [];
-                if (gameComments.length === 0) {
-                    commentsList.innerHTML = '<p>Nenhum comentário ainda. Seja o primeiro!</p>';
-                    return;
-                }
-                gameComments.forEach(comment => {
-                    commentsList.innerHTML += `<div class="comment-item">${comment}</div>`;
-                });
-            };
-
-            const showGameDetails = (gameId) => {
-                currentOpenGameId = gameId;
-                const game = allGames.find(g => g.id === gameId);
-                if (!game) return;
-
-                if (currentUser && !history.includes(gameId)) {
-                    history.unshift(gameId);
-                    history = history.slice(0, 10);
-                    saveUserData();
-                }
-
-                gameContainer.classList.add('hidden');
-                
-                const stars = '★'.repeat(game.rating) + '☆'.repeat(5 - game.rating);
-                detailContent.innerHTML = `
-                    <div class="detail-left">
-                        <img src="${game.imageUrl.replace('400x300', '800x600')}" alt="${game.name}">
-                    </div>
-                    <div class="detail-right">
-                        <div class="detail-info">
-                            <h2>${game.name}</h2>
-                            <p>${game.genre}</p>
-                            <div class="rating">${stars}</div>
-                            <p class="detail-description">${game.description}</p>
+            function renderGames(gamesToRender) {
+                gameGrid.innerHTML = '';
+                gamesToRender.forEach(game => {
+                    const isFavorited = favorites.includes(game.id);
+                    const card = document.createElement('div');
+                    card.className = 'game-card';
+                    card.dataset.id = game.id;
+                    card.innerHTML = `
+                        <img src="${game.imageUrl}" alt="${game.name}">
+                        <div class="card-info">
+                            <div class="card-header">
+                                <h3>${game.name}</h3>
+                                <button class="fav-btn material-icons ${isFavorited ? 'favorited' : ''}" data-id="${game.id}">
+                                    ${isFavorited ? 'favorite' : 'favorite_border'}
+                                </button>
+                            </div>
+                            <span class="card-genre">${game.genre}</span>
+                            <p class="card-description">${game.description.substring(0, 80)}...</p>
+                            <div class="card-footer">
+                                <span class="rating">⭐ ${game.rating}/5</span>
+                                <button class="play-btn" data-id="${game.id}">Jogar</button>
+                            </div>
                         </div>
-                        <div class="detail-comments">
-                             <h3>Comentários</h3>
-                            <div id="detail-comments-list"></div>
-                            <form id="detail-comment-form">
-                                <textarea id="detail-comment-input" placeholder="Escreva seu comentário..." required></textarea>
-                                <button type="submit">Enviar</button>
-                            </form>
-                        </div>
-                    </div>
-                `;
-                
-                renderCommentsForDetailView(gameId);
-                
-                const detailCommentForm = document.getElementById('detail-comment-form');
-                detailCommentForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    if (!currentUser) {
-                        showNotification('Você precisa fazer login para comentar!');
-                        authModal.style.display = 'block';
-                        return;
-                    }
-                    const commentInput = document.getElementById('detail-comment-input');
-                    const newComment = commentInput.value.trim();
-                    if (newComment && currentOpenGameId) {
-                        if (!comments[currentOpenGameId]) comments[currentOpenGameId] = [];
-                        comments[currentOpenGameId].push(newComment);
-                        saveUserData();
-                        renderCommentsForDetailView(currentOpenGameId);
-                        commentInput.value = '';
-                    }
+                    `;
+                    gameGrid.appendChild(card);
                 });
-                
-                gameDetailView.classList.remove('hidden');
-            };
-
-            const hideGameDetails = () => {
-                gameDetailView.classList.add('hidden');
-                gameContainer.classList.remove('hidden');
-                currentOpenGameId = null;
-            };
-
-            // --- EVENTOS ---
-            menuToggleBtn.addEventListener('click', () => sideMenu.classList.toggle('active'));
-            homeLink.addEventListener('click', (e) => { e.preventDefault(); hideGameDetails(); renderGames(allGames); sideMenu.classList.remove('active'); searchInput.value = ''; });
-            favoritesLink.addEventListener('click', (e) => { e.preventDefault(); hideGameDetails(); const favGames = allGames.filter(g => favorites.includes(g.id)); renderGames(favGames); sideMenu.classList.remove('active'); });
-            historyLink.addEventListener('click', (e) => { e.preventDefault(); hideGameDetails(); const historyGames = history.map(id => allGames.find(g => g.id === id) || null).filter(Boolean); renderGames(historyGames); sideMenu.classList.remove('active'); });
-            clearFavoritesBtn.addEventListener('click', (e) => { e.preventDefault(); if (confirm('Tem certeza?')) { favorites = []; saveUserData(); renderGames(allGames); sideMenu.classList.remove('active'); } });
-            clearHistoryBtn.addEventListener('click', (e) => { e.preventDefault(); if (confirm('Tem certeza?')) { history = []; saveUserData(); renderGames(allGames); sideMenu.classList.remove('active'); } });
-
-            searchInput.addEventListener('input', (e) => {
-                hideGameDetails();
-                const searchTerm = normalizeText(e.target.value);
-                const filteredGames = allGames.filter(game => normalizeText(game.name).includes(searchTerm) || normalizeText(game.genre).includes(searchTerm));
-                renderGames(filteredGames);
-            });
-
-            genreToggleBtn.addEventListener('click', () => genreFilterContainer.classList.toggle('visible'));
-            genreFilterContainer.addEventListener('click', (e) => {
-                if (e.target.classList.contains('genre-btn')) {
-                    const selectedGenre = e.target.dataset.genre;
-                    renderGames(selectedGenre === 'all' ? allGames : allGames.filter(g => g.genre === selectedGenre));
-                    genreFilterContainer.classList.remove('visible');
-                }
-            });
+            }
             
-            gameContainer.addEventListener('click', (e) => {
-                const favButton = e.target.closest('.fav-btn');
-                if (favButton) {
-                    e.stopPropagation();
-                    if (!currentUser) {
-                        showNotification('Você precisa fazer login para favoritar jogos!');
-                        authModal.style.display = 'block';
-                        return;
-                    }
-                    const gameId = parseInt(favButton.dataset.id, 10);
-                    favButton.classList.add('animate-heart');
-                    favButton.addEventListener('animationend', () => favButton.classList.remove('animate-heart'), { once: true });
-                    if (favorites.includes(gameId)) {
-                        favorites = favorites.filter(id => id !== gameId);
-                        favButton.classList.remove('favorited');
-                    } else {
-                        favorites.push(gameId);
-                        favButton.classList.add('favorited');
-                    }
-                    saveUserData();
-                    return;
-                }
+            // --- INICIALIZAÇÃO E EVENT LISTENERS DO HUB ---
 
-                // NOVO: Lógica para o botão de jogar
-                const playButton = e.target.closest('.play-btn');
-                if (playButton) {
-                    e.stopPropagation(); // Impede que o clique abra a tela de detalhes
-                    showNotification("Este jogo ainda está em desenvolvimento!");
-                    return;
-                }
-
+            // Evento para abrir detalhes ou jogar
+            gameGrid.addEventListener('click', (e) => {
                 const card = e.target.closest('.game-card');
-                if (card) {
-                    const gameId = parseInt(card.dataset.gameId, 10);
+                if (!card) return;
+                const gameId = parseInt(card.dataset.id);
+
+                if (e.target.classList.contains('play-btn')) {
+                    playGame(gameId);
+                } else if (e.target.classList.contains('fav-btn')) {
+                    toggleFavorite(gameId, e.target);
+                } else {
                     showGameDetails(gameId);
                 }
             });
             
-            backToGridBtn.addEventListener('click', hideGameDetails);
-
-            profileAvatarBtn.addEventListener('click', () => {
-                if (currentUser) {
-                    userDropdown.classList.toggle('visible');
-                } else {
-                    authModal.style.display = 'block';
-                }
-            });
-            
-            logoutBtn.addEventListener('click', handleLogout);
-            authModalCloseBtn.addEventListener('click', () => authModal.style.display = 'none');
-            window.addEventListener('click', (e) => { if (e.target === authModal) authModal.style.display = 'none'; });
-
-            showSignup.addEventListener('click', (e) => { e.preventDefault(); loginForm.style.display = 'none'; signupForm.style.display = 'block'; });
-            showLogin.addEventListener('click', (e) => { e.preventDefault(); signupForm.style.display = 'none'; loginForm.style.display = 'block'; });
-            
-            signupForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const username = document.getElementById('signup-username').value.trim();
-                const password = document.getElementById('signup-password').value.trim();
-                const errorEl = document.getElementById('signup-error');
-                if (users.find(user => user.username === username)) {
-                    errorEl.textContent = 'Este nome de usuário já existe.';
+            // Função para iniciar um jogo
+            function playGame(gameId) {
+                 if (!currentUser) {
+                    showNotification("Você precisa fazer login para jogar!");
+                    authModal.style.display = 'flex';
                     return;
                 }
-                users.push({ username, password });
-                localStorage.setItem('gameHubUsers', JSON.stringify(users));
-                localStorage.setItem('gameHubCurrentUser', username);
-                loadUserData();
-                renderGames(allGames);
-                authModal.style.display = 'none';
-                signupForm.reset();
+                const game = allGames.find(g => g.id === gameId);
+                if (!game) return;
+
+                if (!history.includes(game.id)) {
+                    history.push(game.id);
+                    saveUserData();
+                }
+
+                currentOpenGameId = game.id;
+                gameGrid.classList.add('hidden'); // CORREÇÃO: Esconde a grade em vez do main
+                gameDetailView.classList.add('hidden'); // Garante que a tela de detalhes também seja escondida
+                mainHeader.classList.add('hidden'); // Esconde o cabeçalho para imersão
+
+                if (game.name === "Corrida Infinita") {
+                    gameViewRace.classList.remove('hidden');
+                    // A lógica do jogo de corrida seria iniciada aqui
+                } else if (game.name === "Tick Adventure") {
+                    tickAdventureView.classList.remove('hidden');
+                    if (!tickAdventureInitialized) {
+                        initializeTickAdventure();
+                    } else {
+                        // CORREÇÃO: Reinicia o jogo se já foi inicializado
+                        if (tickAdventureGame.reset) {
+                            tickAdventureGame.reset();
+                        }
+                    }
+                }
+            }
+
+            function closeOpenGames() {
+                // Para o jogo de corrida (se estiver rodando)
+                // stopRaceGame(); 
+                
+                // Para o Tick Adventure
+                if (tickAdventureAnimationId) {
+                    cancelAnimationFrame(tickAdventureAnimationId);
+                    tickAdventureAnimationId = null;
+                }
+
+                gameViewRace.classList.add('hidden');
+                tickAdventureView.classList.add('hidden');
+                
+                gameGrid.classList.remove('hidden'); // CORREÇÃO: Mostra a grade em vez do main
+                mainHeader.classList.remove('hidden');
+            }
+            
+            backToMenuFromRaceBtn.addEventListener('click', closeOpenGames);
+            backFromTickAdventureBtn.addEventListener('click', closeOpenGames);
+
+            
+            // --- LÓGICA DO JOGO TICK ADVENTURE ---
+
+            function initializeTickAdventure() {
+                if (tickAdventureInitialized) return;
+                tickAdventureInitialized = true;
+                
+                const canvas = document.getElementById('gameCanvas');
+                const ctx = canvas.getContext('2d');
+                
+                canvas.width = 1024;
+                canvas.height = 576;
+
+                const gravity = 0.6;
+                let score = 0;
+                let coinCount = 0;
+                let gameOver = false;
+                let gameWon = false;
+                let currentLevelIndex = 0;
+                let inShop = false;
+                let scoreAtLevelStart = 0;
+                let coinsAtLevelStart = 0;
+
+                let playerColor = '#4A90E2';
+                let unlockedColors = ['#4A90E2'];
+
+                class Player {
+                    constructor() {
+                        this.position = { x: 100, y: 100 };
+                        this.velocity = { x: 0, y: 0 };
+                        this.baseWidth = 40;
+                        this.baseHeight = 40;
+                        this.width = this.baseWidth;
+                        this.height = this.baseHeight;
+                        this.speed = 7;
+                        this.jumpForce = 15;
+                        this.onGround = false;
+                        this.power = 'small';
+                        this.invincible = false;
+                        this.color = playerColor;
+                    }
+
+                    draw() {
+                        if (this.invincible && Math.floor(Date.now() / 100) % 2 === 0) return;
+                        this.color = playerColor; // Garante que a cor está sempre atualizada
+                        ctx.fillStyle = this.color;
+                        ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+                        if (this.power === 'big') {
+                            ctx.fillStyle = '#3A1D0A';
+                            ctx.fillRect(this.position.x, this.position.y - 5, this.width, 5);
+                            ctx.fillStyle = this.color;
+                            ctx.fillRect(this.position.x - 8, this.position.y + 20, 8, 30);
+                            ctx.fillRect(this.position.x + this.width, this.position.y + 20, 8, 30);
+                        }
+                        ctx.fillStyle = 'white';
+                        ctx.fillRect(this.position.x + this.width*0.2, this.position.y + this.height*0.2, this.width*0.2, this.width*0.2);
+                        ctx.fillRect(this.position.x + this.width*0.6, this.position.y + this.height*0.2, this.width*0.2, this.width*0.2);
+                        ctx.fillStyle = 'black';
+                        ctx.fillRect(this.position.x + this.width*0.25, this.position.y + this.height*0.25, this.width*0.1, this.width*0.1);
+                        ctx.fillRect(this.position.x + this.width*0.65, this.position.y + this.height*0.25, this.width*0.1, this.width*0.1);
+                    }
+
+                    update() {
+                        this.draw();
+                        this.position.x += this.velocity.x;
+                        this.position.y += this.velocity.y;
+                        this.velocity.y += gravity;
+                        this.onGround = false;
+                    }
+
+                    becomeBig() {
+                        if (this.power === 'small') {
+                            this.power = 'big';
+                            this.position.y -= this.baseHeight;
+                            this.width = this.baseWidth;
+                            this.height = this.baseHeight * 2;
+                            score += 200;
+                        }
+                    }
+                    
+                    becomeSmall() {
+                        if(this.power === 'big'){
+                            this.power = 'small';
+                            this.width = this.baseWidth;
+                            this.height = this.baseHeight;
+                            this.invincible = true;
+                            setTimeout(() => { this.invincible = false; }, 1500);
+                        }
+                    }
+                }
+                
+                class Platform {
+                    constructor({ x, y, width, height }) { this.position = { x, y }; this.width = width; this.height = height; }
+                    draw() { ctx.fillStyle = '#228B22'; ctx.fillRect(this.position.x, this.position.y, this.width, this.height); }
+                }
+                class Enemy {
+                    constructor({ x, y }) { this.position = { x, y }; this.velocity = { x: -2, y: 0 }; this.width = 30; this.height = 30; }
+                    draw() { ctx.fillStyle = '#D0021B'; ctx.fillRect(this.position.x, this.position.y, this.width, this.height); ctx.fillStyle = 'white'; ctx.beginPath(); ctx.moveTo(this.position.x + 8, this.position.y + 8); ctx.lineTo(this.position.x + 14, this.position.y + 14); ctx.moveTo(this.position.x + 14, this.position.y + 8); ctx.lineTo(this.position.x + 8, this.position.y + 14); ctx.moveTo(this.position.x + 22, this.position.y + 8); ctx.lineTo(this.position.x + 28, this.position.y + 14); ctx.moveTo(this.position.x + 28, this.position.y + 8); ctx.lineTo(this.position.x + 22, this.position.y + 14); ctx.stroke(); }
+                    update() { this.draw(); this.position.x += this.velocity.x; }
+                }
+                class Coin {
+                     constructor({ x, y }) { this.position = { x, y }; this.width = 20; this.height = 20; this.radius = 10; }
+                    draw() { ctx.beginPath(); ctx.arc(this.position.x + this.radius, this.position.y + this.radius, this.radius, 0, Math.PI * 2); ctx.fillStyle = '#F5A623'; ctx.fill(); ctx.closePath(); }
+                }
+                class Goal {
+                    constructor({x, y}) { this.position = {x, y}; this.width = 50; this.height = 80; }
+                    draw() { ctx.fillStyle = '#FFD700'; ctx.fillRect(this.position.x, this.position.y, this.width, this.height); ctx.fillStyle = '#FFFFFF'; ctx.font = '20px "Press Start 2P"'; ctx.textAlign = 'center'; ctx.fillText('FIM', this.position.x + this.width / 2, this.position.y + 50); }
+                }
+                class PowerUpBox {
+                    constructor({ x, y }) { this.position = { x, y }; this.width = 40; this.height = 40; this.hit = false; }
+                    draw() { ctx.fillStyle = this.hit ? '#A9A9A9' : '#FFA500'; ctx.fillRect(this.position.x, this.position.y, this.width, this.height); if (!this.hit) { ctx.fillStyle = '#000000'; ctx.font = '25px "Press Start 2P"'; ctx.textAlign = 'center'; ctx.fillText('?', this.position.x + this.width / 2, this.position.y + 30); } }
+                }
+                class PowerUp {
+                    constructor({ x, y }) { this.position = { x, y }; this.velocity = { x: 1, y: 0 }; this.width = 30; this.height = 30; }
+                    draw() { ctx.fillStyle = 'green'; ctx.fillRect(this.position.x, this.position.y, this.width, this.height); }
+                    update() { this.draw(); this.position.x += this.velocity.x; this.position.y += this.velocity.y; this.velocity.y += gravity; }
+                }
+
+                const shopItems = [
+                    { id: 'blue', color: '#4A90E2', price: 0, name: 'Azul' }, { id: 'green', color: '#34D399', price: 10, name: 'Verde' }, { id: 'pink', color: '#F472B6', price: 15, name: 'Rosa' }, { id: 'orange', color: '#F97316', price: 20, name: 'Laranja' },
+                ];
+                let shopButtons = [];
+
+                function saveData() {
+                    const data = { coins: coinCount, unlocked: unlockedColors, selected: playerColor };
+                    localStorage.setItem('tickAdventureData', JSON.stringify(data));
+                }
+
+                function loadData() {
+                    const data = localStorage.getItem('tickAdventureData');
+                    if (data) {
+                        const parsed = JSON.parse(data);
+                        coinCount = parsed.coins || 0;
+                        unlockedColors = parsed.unlocked || ['#4A90E2'];
+                        playerColor = parsed.selected || '#4A90E2';
+                    }
+                }
+                
+                const staticLevelData = [ { platforms: [ { x: 0, y: canvas.height - 30, width: 500, height: 30 }, { x: 600, y: 400, width: 300, height: 30 }, { x: 1000, y: 300, width: 250, height: 30 }, { x: 1400, y: 450, width: 400, height: 30 }, { x: 2000, y: 350, width: 150, height: 30 }, { x: 2300, y: 250, width: 150, height: 30 }, { x: 2600, y: 400, width: 500, height: 30 }, ], enemies: [ { x: 400, y: canvas.height - 60 }, { x: 1100, y: 270 }, { x: 1600, y: 420 }, { x: 2800, y: 370 },], coins: [ { x: 250, y: 450 }, { x: 700, y: 350 }, { x: 1150, y: 250 }, { x: 1500, y: 400 }, { x: 2350, y: 200 }, { x: 2900, y: 350 },], powerUpBoxes: [ { x: 200, y: 400 } ], goal: { x: 3000, y: 320 } }, { platforms: [ { x: 0, y: canvas.height - 30, width: 300, height: 30 }, { x: 400, y: 450, width: 150, height: 30 }, { x: 650, y: 350, width: 200, height: 30 }, { x: 950, y: 250, width: 200, height: 30 }, { x: 1300, y: 400, width: 400, height: 30 }, { x: 1800, y: 300, width: 150, height: 30 }, { x: 2100, y: 200, width: 150, height: 30 }, { x: 2400, y: 450, width: 800, height: 30 }, ], enemies: [ { x: 250, y: canvas.height - 60 }, { x: 700, y: 320 }, { x: 1500, y: 370 }, { x: 2600, y: 420 }, { x: 2900, y: 420 }], coins: [ { x: 450, y: 400 }, { x: 750, y: 300 }, { x: 1050, y: 200 }, { x: 1550, y: 350 }, { x: 2150, y: 150 }, { x: 2700, y: 400 }, { x: 3000, y: 400 }], powerUpBoxes: [ { x: 150, y: 450 }, { x: 1400, y: 250 } ], goal: { x: 3100, y: 370 } } ];
+                function generateProceduralLevel(levelNum) { const level = { platforms: [], enemies: [], coins: [], powerUpBoxes: [], goal: {} }; let currentX = 0; let lastY = canvas.height - 30; level.platforms.push({ x: 0, y: canvas.height - 30, width: 500, height: 30 }); currentX = 500; const levelLength = 4000 + levelNum * 200; while (currentX < levelLength) { const gapX = Math.random() * 150 + 50; const newX = currentX + gapX; const deltaY = Math.random() * 200 - 100; let newY = lastY + deltaY; if (newY < 200) newY = 200; if (newY > canvas.height - 80) newY = canvas.height - 80; const newWidth = Math.random() * 300 + 150; level.platforms.push({ x: newX, y: newY, width: newWidth, height: 30 }); if (Math.random() < 0.6) { level.coins.push({ x: newX + newWidth / 2 - 10, y: newY - 40 }); } if (Math.random() < 0.15 + (levelNum * 0.01) ) { level.enemies.push({ x: newX + newWidth / 2 - 15, y: newY - 30 }); } if (Math.random() < 0.18) { level.powerUpBoxes.push({ x: newX + 20, y: newY - 80 }); } currentX = newX + newWidth; lastY = newY; } level.goal = { x: currentX + 100, y: lastY - 80 }; return level; }
+                
+                let player, platforms = [], enemies = [], coins = [], powerUpBoxes = [], activePowerUps = [], goal;
+                
+                function initLevel(levelConfig) {
+                    player = new Player(); platforms = levelConfig.platforms.map(p => new Platform(p)); enemies = levelConfig.enemies.map(e => new Enemy(e)); coins = levelConfig.coins.map(c => new Coin(c)); powerUpBoxes = levelConfig.powerUpBoxes.map(b => new PowerUpBox(b)); activePowerUps = []; goal = new Goal(levelConfig.goal); scrollOffset = 0; scoreAtLevelStart = score; coinsAtLevelStart = coinCount;
+                }
+
+                function getLevelConfig(levelIndex) { if (levelIndex < staticLevelData.length) { return staticLevelData[levelIndex]; } return generateProceduralLevel(levelIndex); }
+
+                function resetGame() {
+                    score = 0; loadData(); currentLevelIndex = 0; gameOver = false; gameWon = false; inShop = false;
+                    if (tickAdventureAnimationId) cancelAnimationFrame(tickAdventureAnimationId);
+                    const levelConfig = getLevelConfig(0); initLevel(levelConfig);
+                    scoreAtLevelStart = 0; animate();
+                }
+
+                function restartLevel() {
+                    score = scoreAtLevelStart; coinCount = coinsAtLevelStart; gameOver = false;
+                    if (tickAdventureAnimationId) cancelAnimationFrame(tickAdventureAnimationId);
+                    const levelConfig = getLevelConfig(currentLevelIndex); initLevel(levelConfig);
+                    animate();
+                }
+
+                const keys = { right: { pressed: false }, left: { pressed: false } };
+                let scrollOffset = 0;
+
+                function animate() {
+                    if (gameOver || gameWon) { displayEndMessage(); return; }
+                    if (inShop) { drawShop(); return; }
+
+                    tickAdventureAnimationId = requestAnimationFrame(animate);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.save();
+                    ctx.translate(-scrollOffset, 0);
+
+                    platforms.forEach(p => p.draw()); coins.forEach(c => c.draw()); powerUpBoxes.forEach(b => b.draw()); enemies.forEach(e => e.update()); activePowerUps.forEach(p => p.update()); goal.draw(); player.update();
+                    
+                    if (player.position.y > canvas.height) gameOver = true;
+
+                    enemies.forEach((enemy, index) => { platforms.forEach(platform => { if(enemy.position.x <= platform.position.x && enemy.velocity.x < 0) { if(enemy.position.y + enemy.height === platform.position.y && enemy.position.x + enemy.width > platform.position.x) { enemy.velocity.x = 2; } } else if (enemy.position.x + enemy.width >= platform.position.x + platform.width && enemy.velocity.x > 0) { if(enemy.position.y + enemy.height === platform.position.y && enemy.position.x < platform.position.x + platform.width) { enemy.velocity.x = -2; } } }); if ( player.position.x < enemy.position.x + enemy.width && player.position.x + player.width > enemy.position.x && player.position.y < enemy.position.y + enemy.height && player.position.y + player.height > enemy.position.y ) { if (player.velocity.y > 0 && player.position.y + player.height < enemy.position.y + 20) { enemies.splice(index, 1); player.velocity.y = -8; score += 50; } else if (!player.invincible) { if (player.power === 'big') { player.becomeSmall(); } else { gameOver = true; } } } });
+                    
+                    if (keys.right.pressed) player.velocity.x = player.speed; else if (keys.left.pressed && player.position.x > 0) player.velocity.x = -player.speed; else player.velocity.x = 0;
+                    if (player.position.x - scrollOffset > 400) scrollOffset = player.position.x - 400; if (player.position.x - scrollOffset < 100) { scrollOffset = player.position.x - 100; if (scrollOffset < 0) scrollOffset = 0; }
+                    
+                    platforms.forEach(platform => { if ( player.position.y + player.height <= platform.position.y && player.position.y + player.height + player.velocity.y >= platform.position.y && player.position.x + player.width >= platform.position.x && player.position.x <= platform.position.x + platform.width ) { player.velocity.y = 0; player.onGround = true; } activePowerUps.forEach(p => { if ( p.position.y + p.height <= platform.position.y && p.position.y + p.height + p.velocity.y >= platform.position.y && p.position.x + p.width >= platform.position.x && p.position.x <= platform.position.x + platform.width ) { p.velocity.y = 0; } }); });
+                    coins.forEach((coin, index) => { if( player.position.x < coin.position.x + coin.width && player.position.x + player.width > coin.position.x && player.position.y < coin.position.y + coin.height && player.position.y + player.height > coin.position.y ) { coins.splice(index, 1); score += 100; coinCount++; saveData(); } });
+                    powerUpBoxes.forEach(box => { if ( player.position.x < box.position.x + box.width && player.position.x + player.width > box.position.x && player.position.y + player.velocity.y <= box.position.y + box.height && player.position.y > box.position.y && player.velocity.y < 0 ) { if (!box.hit) { box.hit = true; player.velocity.y = 0; activePowerUps.push(new PowerUp({ x: box.position.x, y: box.position.y - 40 })); } } });
+                    activePowerUps.forEach((p, index) => { if ( player.position.x < p.position.x + p.width && player.position.x + player.width > p.position.x && player.position.y < p.position.y + p.height && player.position.y + player.height > p.position.y ) { activePowerUps.splice(index, 1); player.becomeBig(); } });
+                    if ( player.position.x < goal.position.x + goal.width && player.position.x + player.width > goal.position.x && player.position.y < goal.position.y + goal.height && player.position.y + player.height > goal.position.y ) {
+                        if (currentLevelIndex >= 49) { gameWon = true; } else { inShop = true; }
+                    }
+                    ctx.restore();
+                    drawUI();
+                }
+
+                function drawShop() {
+                    shopButtons = [];
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = 'white'; ctx.font = '40px "Press Start 2P"'; ctx.textAlign = 'center';
+                    ctx.fillText('LOJA', canvas.width / 2, 80);
+                    ctx.font = '20px "Press Start 2P"';
+                    ctx.fillText(`Moedas: ${coinCount}`, canvas.width / 2, 120);
+                    shopItems.forEach((item, index) => {
+                        const x = 162 + (index * 180); const y = 200;
+                        ctx.strokeStyle = playerColor === item.color ? '#FFD700' : '#FFFFFF';
+                        ctx.lineWidth = 4; ctx.strokeRect(x, y, 150, 150);
+                        ctx.fillStyle = item.color; ctx.fillRect(x + 25, y + 20, 100, 40);
+                        ctx.fillStyle = 'white'; ctx.font = '16px "Press Start 2P"';
+                        ctx.fillText(item.name, x + 75, y + 90);
+                        const isUnlocked = unlockedColors.includes(item.color);
+                        let buttonText, buttonColor;
+                        if (isUnlocked) {
+                             buttonText = playerColor === item.color ? 'EQUIPADO' : 'SELECIONAR';
+                             buttonColor = playerColor === item.color ? '#555' : '#1E90FF';
+                        } else {
+                            buttonText = `COMPRAR (${item.price})`;
+                            buttonColor = coinCount >= item.price ? '#228B22' : '#8B0000';
+                        }
+                        const btnX = x + 15, btnY = y + 105, btnW = 120, btnH = 35;
+                        ctx.fillStyle = buttonColor; ctx.fillRect(btnX, btnY, btnW, btnH);
+                        ctx.fillStyle = 'white'; ctx.font = '10px "Press Start 2P"';
+                        ctx.fillText(buttonText, x + 75, y + 128);
+                        shopButtons.push({ x: btnX, y: btnY, width: btnW, height: btnH, item: item });
+                    });
+                    const continueBtn = {x: canvas.width / 2 - 150, y: 450, width: 300, height: 50};
+                    ctx.fillStyle = '#1E90FF'; ctx.fillRect(continueBtn.x, continueBtn.y, continueBtn.width, continueBtn.height);
+                    ctx.fillStyle = 'white'; ctx.font = '20px "Press Start 2P"';
+                    ctx.fillText(`IR PARA FASE ${currentLevelIndex + 2}`, canvas.width / 2, 485);
+                    shopButtons.push({ ...continueBtn, action: 'continue' });
+                }
+
+                function drawUI(){
+                    ctx.fillStyle = "white"; ctx.font = '20px "Press Start 2P"'; ctx.textAlign = 'left';
+                    ctx.fillText(`Pontos: ${score}`, 20, 35); ctx.fillText(`Nível: ${currentLevelIndex + 1}`, canvas.width - 220, 35);
+                    ctx.beginPath(); ctx.arc(20 + 10, 60 + 10, 10, 0, Math.PI * 2); ctx.fillStyle = '#F5A623'; ctx.fill(); ctx.closePath();
+                    ctx.fillStyle = "white"; ctx.fillText(`x ${coinCount}`, 45, 75);
+                }
+                
+                function displayEndMessage() {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = 'white'; ctx.font = '40px "Press Start 2P"'; ctx.textAlign = 'center';
+                    if (gameWon) { ctx.fillText('VOCÊ VENCEU!', canvas.width / 2, canvas.height / 2 - 40); ctx.fillText(`Chegou ao nível 50!`, canvas.width / 2, canvas.height / 2 + 10);
+                    } else { ctx.fillText('VOCÊ PERDEU!', canvas.width / 2, canvas.height / 2 - 20); }
+                    ctx.font = '20px "Press Start 2P"'; ctx.fillText('Clique ou aperte Espaço para jogar novamente', canvas.width / 2, canvas.height / 2 + 60);
+                }
+
+                 window.addEventListener('keydown', ({ keyCode }) => {
+                     if (tickAdventureView.classList.contains('hidden')) return; // Não processa se o jogo não estiver visível
+                     if (inShop) {
+                        if (keyCode === 32) { currentLevelIndex++; const levelConfig = getLevelConfig(currentLevelIndex); initLevel(levelConfig); inShop = false; animate(); }
+                        return;
+                    }
+                     if (gameOver || gameWon) { if (keyCode === 32) { if (gameOver) { restartLevel(); } else { resetGame(); } } return; }
+                    switch (keyCode) { case 65: case 37: keys.left.pressed = true; break; case 68: case 39: keys.right.pressed = true; break; case 87: case 38: case 32: if(player.onGround) player.velocity.y = -player.jumpForce; break; }
+                });
+                window.addEventListener('keyup', ({ keyCode }) => {
+                    if (tickAdventureView.classList.contains('hidden')) return;
+                    switch (keyCode) { case 65: case 37: keys.left.pressed = false; break; case 68: case 39: keys.right.pressed = false; break; } 
+                });
+
+                const leftBtn = document.getElementById('left-btn'); const rightBtn = document.getElementById('right-btn'); const jumpBtn = document.getElementById('jump-btn');
+                leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys.left.pressed = true; }); leftBtn.addEventListener('touchend', (e) => { e.preventDefault(); keys.left.pressed = false; });
+                rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys.right.pressed = true; }); rightBtn.addEventListener('touchend', (e) => { e.preventDefault(); keys.right.pressed = false; });
+                jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); if(player?.onGround) player.velocity.y = -player.jumpForce; });
+
+                canvas.addEventListener('click', (event) => {
+                    if (inShop) {
+                        const rect = canvas.getBoundingClientRect(); const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height; const mouseX = (event.clientX - rect.left) * scaleX; const mouseY = (event.clientY - rect.top) * scaleY;
+                        shopButtons.forEach(button => {
+                            if (mouseX > button.x && mouseX < button.x + button.width && mouseY > button.y && mouseY < button.y + button.height) {
+                               if (button.action === 'continue') {
+                                    currentLevelIndex++; const levelConfig = getLevelConfig(currentLevelIndex); initLevel(levelConfig); inShop = false; animate();
+                               } else {
+                                   const item = button.item; const isUnlocked = unlockedColors.includes(item.color);
+                                   if (isUnlocked) { playerColor = item.color; } else if (coinCount >= item.price) { coinCount -= item.price; playerColor = item.color; unlockedColors.push(item.color); }
+                                   saveData();
+                               }
+                            }
+                        });
+                        return;
+                    }
+                    if (gameOver) { restartLevel(); } else if (gameWon) { resetGame(); }
+                 });
+                
+                loadData();
+                resetGame();
+
+                // CORREÇÃO: Expõe a função de reset para o escopo global do hub
+                tickAdventureGame.reset = resetGame;
+            }
+
+            // --- FIM DA LÓGICA DO JOGO TICK ADVENTURE ---
+            
+            // --- LÓGICA DE AUTENTICAÇÃO ---
+
+            // Funções para mostrar/esconder forms
+            showSignup.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
             });
 
+            showLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                signupForm.style.display = 'none';
+                loginForm.style.display = 'block';
+            });
+            
+            // Evento de Login
             loginForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const username = document.getElementById('login-username').value.trim();
-                const password = document.getElementById('login-password').value.trim();
-                const errorEl = document.getElementById('login-error');
+                const username = document.getElementById('login-username').value;
+                const password = document.getElementById('login-password').value;
                 const user = users.find(u => u.username === username && u.password === password);
+
                 if (user) {
-                    localStorage.setItem('gameHubCurrentUser', username);
+                    currentUser = user.username;
+                    localStorage.setItem('gameHubCurrentUser', currentUser);
                     loadUserData();
-                    renderGames(allGames);
+                    updateUIForLoggedInUser();
                     authModal.style.display = 'none';
                     loginForm.reset();
+                    showNotification(`Bem-vindo de volta, ${currentUser}!`);
+                    renderGames(allGames); // Re-renderiza para atualizar favoritos
                 } else {
-                    errorEl.textContent = 'Usuário ou senha inválidos.';
+                    loginError.textContent = "Nome de usuário ou senha inválidos.";
                 }
             });
 
-            const populateGenres = () => {
-                let buttonsHTML = '<button class="genre-btn" data-genre="all">Todos</button>';
-                genres.forEach(genre => { buttonsHTML += `<button class="genre-btn" data-genre="${genre}">${genre}</button>`; });
-                genreFilterContainer.innerHTML = buttonsHTML;
-            };
-            populateGenres();
-            loadUserData();
+            // Evento de Criar Conta
+            signupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('signup-username').value;
+                const password = document.getElementById('signup-password').value;
+                const userExists = users.some(u => u.username === username);
+
+                if (userExists) {
+                    signupError.textContent = "Este nome de usuário já existe.";
+                } else {
+                    users.push({ username, password });
+                    localStorage.setItem('gameHubUsers', JSON.stringify(users));
+                    
+                    currentUser = username;
+                    localStorage.setItem('gameHubCurrentUser', currentUser);
+                    loadUserData();
+                    updateUIForLoggedInUser();
+                    
+                    authModal.style.display = 'none';
+                    signupForm.reset();
+                    showNotification(`Conta criada com sucesso! Bem-vindo, ${currentUser}!`);
+                    renderGames(allGames);
+                }
+            });
+            
+            // Evento de Logout
+            logoutBtn.addEventListener('click', () => {
+                currentUser = null;
+                localStorage.removeItem('gameHubCurrentUser');
+                loadUserData(); // Limpa os dados do usuário
+                updateUIForLoggedOutUser();
+                userDropdown.classList.remove('visible');
+                showNotification("Você saiu da sua conta.");
+                renderGames(allGames); // Re-renderiza para limpar favoritos
+            });
+
+            // Renderização inicial
             renderGames(allGames);
+            
+            // Verifica se há um usuário logado ao carregar a página
+            const loggedInUser = localStorage.getItem('gameHubCurrentUser');
+            if (loggedInUser) {
+                currentUser = loggedInUser;
+                loadUserData();
+                updateUIForLoggedInUser();
+            }
+
+            function loadUserData() {
+              if (currentUser && allUserData[currentUser]) {
+                favorites = allUserData[currentUser].favorites || [];
+                history = allUserData[currentUser].history || [];
+                comments = allUserData[currentUser].comments || {};
+              } else {
+                 favorites = []; history = []; comments = {};
+              }
+            }
+            function saveUserData() {
+              if (currentUser) {
+                  if (!allUserData[currentUser]) {
+                      allUserData[currentUser] = {};
+                  }
+                  allUserData[currentUser].favorites = favorites;
+                  allUserData[currentUser].history = history;
+                  allUserData[currentUser].comments = comments;
+                  localStorage.setItem('gameHubUserData', JSON.stringify(allUserData));
+              }
+            }
+
+            function updateUIForLoggedInUser() {
+                profileAvatarBtn.innerHTML = `
+                    <div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center font-bold text-xl">
+                        ${currentUser.charAt(0).toUpperCase()}
+                    </div>
+                `;
+                dropdownUsername.textContent = currentUser;
+            }
+
+            function updateUIForLoggedOutUser() {
+                 profileAvatarBtn.innerHTML = 'account_circle';
+                 userDropdown.classList.remove('visible');
+            }
+            
+            function showGameDetails(gameId) {
+                gameGrid.classList.add('hidden'); // CORREÇÃO: Esconde a grade
+                gameDetailView.classList.remove('hidden');
+                 const game = allGames.find(g => g.id === gameId);
+                 if(game) {
+                    detailContent.innerHTML = `
+                        <div>
+                            <img src="${game.imageUrl}" alt="${game.name}">
+                        </div>
+                        <div class="detail-info">
+                            <h2>${game.name}</h2>
+                            <span class="card-genre">${game.genre}</span>
+                            <p class="rating">⭐ ${game.rating}/5</p>
+                            <p class="detail-description">${game.description}</p>
+                            <button class="play-btn mt-6" data-id="${game.id}">Jogar Agora</button>
+                        </div>
+                    `;
+                 }
+            }
+            function toggleFavorite(gameId, element) {
+                if(!currentUser) { authModal.style.display = 'flex'; return; }
+                const index = favorites.indexOf(gameId);
+                element.classList.add('animate-heart');
+                setTimeout(() => element.classList.remove('animate-heart'), 500);
+
+                if (index > -1) {
+                    favorites.splice(index, 1);
+                    element.textContent = 'favorite_border';
+                    element.classList.remove('favorited');
+                    showNotification('Removido dos favoritos!');
+                } else {
+                    favorites.push(gameId);
+                    element.textContent = 'favorite';
+                    element.classList.add('favorited');
+                    showNotification('Adicionado aos favoritos!');
+                }
+                saveUserData();
+            }
+            
+             backToGridBtn.addEventListener('click', () => {
+                gameDetailView.classList.add('hidden');
+                gameGrid.classList.remove('hidden'); // CORREÇÃO: Mostra a grade
+            });
+
+             detailContent.addEventListener('click', (e) => {
+                if(e.target.classList.contains('play-btn')) {
+                    const gameId = parseInt(e.target.dataset.id);
+                    playGame(gameId);
+                }
+             });
+
+            profileAvatarBtn.addEventListener('click', () => {
+                if(currentUser) {
+                    userDropdown.classList.toggle('visible');
+                } else {
+                    authModal.style.display = 'flex';
+                }
+            });
+             authModalCloseBtn.onclick = () => authModal.style.display = "none";
+             window.onclick = (event) => { if (event.target == authModal) { authModal.style.display = "none"; } }
+
         });
     </script>
 </body>
